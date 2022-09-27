@@ -25,16 +25,16 @@ module.exports = class Product {
         });
     }
 
-    static fetchAll() {
+    static fetchAll(cb) {
         const p = path.join(
             path.dirname(require.main.filename),
             'data',
             'products.json',
         );
         fs.readFile(p, (err, fileContent) => {
-            if(err) return [];
+            if(err) cb([]);
 
-            return Json.parse(fileContent);
+            cb(JSON.parse(fileContent));
         });
     }
 }
