@@ -21,12 +21,13 @@ module.exports = class Cart {
             console.log(existingProductIndex);
 
             if(existingProductIndex != -1) {
-                const existingProduct = cart.products[existingProductIndex];
-                updatedProduct = {...existingProduct};
-                updatedProduct.qty = updatedProduct.qty++;
-                cart.products = [...cart.products]; 
+                cart.products[existingProductIndex].qty++;
+                // const existingProduct = cart.products[existingProductIndex];
+                // updatedProduct = {...existingProduct};
+                // updatedProduct.qty = updatedProduct.qty++;
+                // cart.products = [...cart.products]; ............................>>> 원래 코드 이해 못하겠음...
 
-                cart.products[existingProductIndex] = updatedProduct;
+                // cart.products[existingProductIndex] = updatedProduct;
             } else {
                 updatedProduct = {id: id, qty: 1};
                 cart.products = [...cart.products, updatedProduct];
