@@ -45,6 +45,25 @@ module.exports = class Product {
     });
   }
 
+  static delete(id) {
+    console.log(id);
+    getProductsFromFile(products => {
+      if(id) {
+        var updatedProducts = [...products];
+        const deleteProdId = updatedProducts.findIndex(prod => {id === prod.id});
+        //updatedProducts = updatedProducts.splice(deleteProdId, 1);  //! 배열객체를 deleted된 배열로 만들고, deleted된 부분을 반환하는 함수..
+        updatedProducts.splice(deleteProdId, 1);
+
+
+        console.log("u p :" + updatedProducts[0]);
+
+        fs.writeFile(p, JSON.stringify(updatedProducts), err => {
+          console.log("[err]" + err);   //! 여가에 걸리는 것 같은데, err값은 없음..
+        });
+      }
+    });
+  }
+
   static fetchAll(cb) {
     getProductsFromFile(cb);
   }
