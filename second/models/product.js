@@ -1,23 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+const db = require('../util/database');
 
 const Cart = require('./cart')
-
-const p = path.join(
-  path.dirname(require.main.filename),
-  'data',
-  'products.json'
-);
-
-const getProductsFromFile = cb => {
-  fs.readFile(p, (err, fileContent) => {
-    if (err) {
-      cb([]);
-    } else {
-      cb(JSON.parse(fileContent));
-    }
-  });
-};
 
 module.exports = class Product {
   constructor(id, title, imageUrl, description, price) {
@@ -28,66 +11,22 @@ module.exports = class Product {
     this.price = price;
   }
 
+  //! INSERT 에서, VALUES 값을 ? 로 하는 이유는, SQL injection 을 방지하기 위하여 숨기기 위함이다.
   save() {
-    getProductsFromFile(products => {
-      if(this.id) {
-        const existingProductIndex = products.findIndex(prod => prod.id === this.id);
-        const updatedProducts = [...products];
-        updatedProducts[existingProductIndex] = this;
-        fs.writeFile(p, JSON.stringify(updatedProducts), err => {
-          console.log(err);
-        });
-      } else {
-        this.id = Math.random().toString();
-        products.push(this);
-        fs.writeFile(p, JSON.stringify(products), err => {
-          console.log(err);
-        });
-      }
-    });
+    return db.execute('INSERT INTO products (title, price, imageUrl, description) VALUES (?, ?, ?, ?)',
+    [this.title, this.price, this.imageUrl, this.description]);
   }
 
   //udemy code
   static deleteById(id) {
-    getProductsFromFile(products => {
-      const product = products.find(prod => prod.id === id);
-      const updatedProducts = products.filter(p => p.id !== id);
-      fs.writeFile(p, JSON.stringify(updatedProducts), err => {
-        if(!err) {
-          Cart.deleteProduct(id, product.price);
-        }
-      });
-    });
+ 
   }
 
-  //내 코드
-  // static delete(id) {
-  //   console.log(id);
-  //   getProductsFromFile(products => {
-  //     if(id) {
-  //       var updatedProducts = [...products];
-  //       const deleteProdId = updatedProducts.findIndex(prod => {id === prod.id});
-  //       //updatedProducts = updatedProducts.splice(deleteProdId, 1);  //! 배열객체를 deleted된 배열로 만들고, deleted된 부분을 반환하는 함수..
-  //       updatedProducts.splice(deleteProdId, 1);
-
-
-  //       console.log("u p :" + updatedProducts[0]);
-
-  //       fs.writeFile(p, JSON.stringify(updatedProducts), err => {
-  //         console.log("[err]" + err);   //! 여가에 걸리는 것 같은데, err값은 없음.. ==> 아... err === true 일 경우가 에러난거..
-  //       });
-  //     }
-  //   });
-  // }
-
   static fetchAll(cb) {
-    getProductsFromFile(cb);
+  return db.execute('SELECT * FROM products');
   }
 
   static findById(id, cb) {
-    getProductsFromFile(products => {
-      const product = products.find(p => p.id === id);
-      cb(product);
-    });
+    return db.execute('SELECT * FROM products WHERE products.id = ?', [id]);
   }
 };
