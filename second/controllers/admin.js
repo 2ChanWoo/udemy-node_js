@@ -9,6 +9,7 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
+  console.log(`postAddProduct req >> ${req.user}`);
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
@@ -17,7 +18,8 @@ exports.postAddProduct = (req, res, next) => {
     title: title,
     price: price,
     imageUrl: imageUrl,
-    description: description
+    description: description,
+    userId: req.user.id //! << Q. 그리구, 모든 곳에서 쓸  수 있고??
   }).then((result) => {
     console.log(`Created product : ${title}`)
     res.redirect('/admin/products');
